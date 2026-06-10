@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+.idea/
+.DS_Store
+AIchess.cpp
+aichess.docx

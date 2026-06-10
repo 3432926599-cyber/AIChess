@@ -1,0 +1,356 @@
+/* ============================================================
+   五子棋 AI — 样式表
+   设计理念：素雅、温润，如棋盘与棋子般沉静
+   ============================================================ */
+
+/* --- CSS 变量 --- */
+:root {
+    --bg:            #f7f3eb;
+    --surface:       #fefcf7;
+    --border:        #d4c5a9;
+    --text:          #3d3226;
+    --text-muted:    #8a7b68;
+    --accent:        #a0522d;
+    --accent-light:  #c67d56;
+    --black-stone:   #2c2c2c;
+    --white-stone:   #f5f0e5;
+    --shadow:        0 2px 16px rgba(60, 40, 20, 0.10);
+    --shadow-lg:     0 8px 40px rgba(60, 40, 20, 0.18);
+    --radius:        10px;
+    --transition:    0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- 基础重置 --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 细微纹理背景 */
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(180, 160, 130, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(180, 160, 130, 0.08) 0%, transparent 50%);
+}
+
+/* --- 容器 --- */
+.container {
+    max-width: 820px;
+    width: 100%;
+    padding: 24px;
+}
+
+/* --- 标题 --- */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+
+.subtitle {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+}
+
+/* --- 游戏主区域 --- */
+.game-area {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* --- 棋盘容器 --- */
+.board-wrapper {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 18px;
+    position: relative;
+}
+
+/* 模拟木纹 */
+.board-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    background:
+        repeating-linear-gradient(
+            2deg,
+            transparent,
+            transparent 3px,
+            rgba(139, 115, 85, 0.03) 3px,
+            rgba(139, 115, 85, 0.03) 4px
+        ),
+        linear-gradient(175deg, #e8d5b0 0%, #dcc8a0 40%, #e0cdab 100%);
+    z-index: 0;
+    border: 2px solid #c4a882;
+}
+
+.board-wrapper > canvas {
+    position: relative;
+    z-index: 1;
+    display: block;
+    border-radius: 4px;
+}
+
+/* --- 信息面板 --- */
+.info-panel {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 状态卡片 */
+.status-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.status-card.ai-thinking {
+    border-color: var(--accent-light);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #555;
+    transition: background var(--transition);
+}
+
+.status-dot.black-turn { background: #3a3a3a; }
+.status-dot.white-turn { background: #d5cec0; border: 1px solid #bbb; }
+.status-dot.game-over  { background: var(--accent); }
+
+#statusText {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+/* 统计 */
+.stats {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: var(--shadow);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.piece-label {
+    font-size: 1.3rem;
+}
+
+.black-label { color: #3a3a3a; }
+.white-label { color: #c5b99a; }
+
+/* 按钮 */
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+.btn-primary:hover {
+    background: var(--accent-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(160, 82, 45, 0.30);
+}
+
+.btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+    background: #f0ebe0;
+    border-color: #b8a088;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 算法说明 */
+.legend {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+}
+
+.legend-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+}
+
+.legend-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.legend-list li {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(160, 82, 45, 0.08);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* --- 胜利弹窗 --- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 20, 10, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.hidden { display: none; }
+
+.win-dialog {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 36px 48px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: scaleIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 320px;
+}
+
+.win-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+
+.win-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.win-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+
+/* --- 响应式 --- */
+@media (max-width: 660px) {
+    .game-area {
+        flex-direction: column;
+        align-items: center;
+    }
+    .info-panel {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 400px;
+    }
+    .title { font-size: 1.5rem; }
+}

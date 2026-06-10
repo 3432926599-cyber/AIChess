@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋 AI — 算法优化版</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <!-- 标题 -->
+    <header class="header">
+        <h1 class="title">五子棋</h1>
+        <p class="subtitle">Gomoku AI · α-β 剪枝 · Zobrist 哈希</p>
+    </header>
+
+    <!-- 棋盘区域 -->
+    <main class="game-area">
+        <div class="board-wrapper">
+            <canvas id="boardCanvas"></canvas>
+        </div>
+
+        <!-- 信息面板 -->
+        <aside class="info-panel">
+            <div class="status-card" id="statusCard">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">你的回合（黑棋）</span>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">步数</span>
+                    <span class="stat-value" id="moveCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">黑棋</span>
+                    <span class="stat-value piece-label black-label">●</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">白棋</span>
+                    <span class="stat-value piece-label white-label">●</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" id="btnNewGame">新游戏</button>
+                <button class="btn btn-secondary" id="btnUndo">悔棋</button>
+            </div>
+
+            <div class="legend">
+                <h3 class="legend-title">算法说明</h3>
+                <ul class="legend-list">
+                    <li><span class="legend-num">1</span> α-β 剪枝搜索</li>
+                    <li><span class="legend-num">2</span> Zobrist 哈希置换表</li>
+                    <li><span class="legend-num">3</span> 棋型评估函数</li>
+                    <li><span class="legend-num">4</span> 着法排序+历史启发</li>
+                    <li><span class="legend-num">5</span> 迭代加深搜索</li>
+                    <li><span class="legend-num">6</span> 内置开局库</li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<!-- 胜利弹窗 -->
+<div class="overlay hidden" id="overlay">
+    <div class="win-dialog">
+        <div class="win-icon" id="winIcon"></div>
+        <h2 class="win-text" id="winText"></h2>
+        <p class="win-sub" id="winSub"></p>
+        <button class="btn btn-primary" onclick="newGame()">再来一局</button>
+    </div>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
