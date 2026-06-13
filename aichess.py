@@ -35,13 +35,13 @@ CANDIDATE_RADIUS = 2         # 候选着法只考虑已有棋子周围 2 格
 
 # 棋型分数 (用于静态评估)
 SCORE_FIVE        = 10000000  # 连五 / 胜利
-SCORE_OPEN_FOUR   = 100000    # 活四 / 必胜
-SCORE_RUSH_FOUR   = 8000      # 冲四 / 必须防守
-SCORE_OPEN_THREE  = 3000      # 活三 / 严重威胁
-SCORE_SLEEP_THREE = 500       # 眠三 / 潜在威胁
-SCORE_OPEN_TWO    = 200       # 活二
-SCORE_SLEEP_TWO   = 30        # 眠二
-SCORE_OPEN_ONE    = 10        # 活一
+SCORE_OPEN_FOUR   = 500000    # 活四 / 必胜（提升权重确保优先进攻）
+SCORE_RUSH_FOUR   = 12000     # 冲四 / 必须防守
+SCORE_OPEN_THREE  = 5000      # 活三 / 严重威胁
+SCORE_SLEEP_THREE = 800       # 眠三 / 潜在威胁
+SCORE_OPEN_TWO    = 300       # 活二
+SCORE_SLEEP_TWO   = 50        # 眠二
+SCORE_OPEN_ONE    = 15        # 活一
 
 # 四个搜索方向 (dx, dy): 水平, 垂直, 主对角线, 副对角线
 DIRECTIONS = [(1, 0), (0, 1), (1, 1), (1, -1)]
@@ -382,9 +382,8 @@ class GomokuAI:
                             op_score += 5000
 
         # 攻防平衡：自己的进攻分 - 对手的进攻分
-        # 防守权重 1.35：只有显著偏重防守，浅层搜索才有可能拦截对手活三
-        # 否则 AI 会在己方进攻分略高时放弃防守，被对手九步速杀
-        return my_score - op_score * 1.35
+        # 己方 1.05× 微幅加成鼓励主动进攻，取代原版 op_score*1.35 的过度防守偏见
+        return my_score * 1.05 - op_score
 
     # ----------------------------------------------------------
     # 候选着法生成
@@ -612,20 +611,66 @@ class GomokuAI:
         return blocks
 
     # ----------------------------------------------------------
+    # 获胜着法检测（攻击优先）
+    # ----------------------------------------------------------
+    def find_winning_moves(self, board, player):
+        """
+        检测 AI 自身能否直接获胜 —— 成五 或 活四（两端开放，无法封堵）。
+        必须在防守之前检查：自己能赢就先赢，不用管对手有什么威胁。
+        """
+        wins = set()
+        for r in range(BOARD_SIZE):
+            for c in range(BOARD_SIZE):
+                if board[r][c] != EMPTY:
+                    continue
+                board[r][c] = player
+                # 1. 直接成五？
+                if self.check_win(board, r, c, player):
+                    wins.add((r, c))
+                else:
+                    # 2. 形成活四？（两端都开放，对手无法同时封堵）
+                    for dr, dc in DIRECTIONS:
+                        count, ol, or_, sl, sr = self.analyze_line(
+                            board, r, c, dr, dc, player)
+                        if count == 4 and ol and or_:
+                            wins.add((r, c))
+                            break
+                board[r][c] = EMPTY
+        return wins
+
+    # ----------------------------------------------------------
     # 迭代加深搜索
     # ----------------------------------------------------------
     def search(self, board, player, move_count):
         """
-        迭代加深搜索 —— 主入口（含威胁检测 + 开局库 + IDDFS）。
+        迭代加深搜索 —— 主入口（含获胜检测 + 威胁检测 + 开局库 + IDDFS）。
         """
         opponent = BLACK if player == WHITE else WHITE
 
         # =======================================================
-        # 第 0 优先级：紧急防守 —— 堵对手的冲四/活四/成五点
+        # ★ 第 0 优先级：直接获胜 —— 自己能赢就先赢，再管防守
+        # =======================================================
+        wins = self.find_winning_moves(board, player)
+        if wins:
+            # 优先返回直接成五的着法
+            for wr, wc in wins:
+                board[wr][wc] = player
+                if self.check_win(board, wr, wc, player):
+                    board[wr][wc] = EMPTY
+                    print(f"[AI] 🔥 直接成五取胜！({wr}, {wc})")
+                    return (wr, wc)
+                board[wr][wc] = EMPTY
+            # 活四必胜
+            print(f"[AI] 🔥 活四必胜！{list(wins)[0]}")
+            return list(wins)[0]
+
+        # =======================================================
+        # 第 1 优先级：紧急防守 —— 自己赢不了才考虑堵对手
         # =======================================================
         blocks = self.find_blocking_moves(board, opponent)
         if blocks:
             if len(blocks) == 1:
+                print(f"[AI] 🛡️ 紧急封堵 {list(blocks)[0]}")
                 return list(blocks)[0]
             # 多点需要堵 → 选最有利己方的那一个
             best_block, best_val = None, -math.inf
@@ -636,10 +681,11 @@ class GomokuAI:
                 if val > best_val:
                     best_val = val
                     best_block = (br, bc)
+            print(f"[AI] 🛡️ 最佳封堵 {best_block}")
             return best_block
 
         # =======================================================
-        # 第 1 优先级：开局库（仅当局面匹配定式）
+        # 第 2 优先级：开局库（仅当局面匹配定式）
         # =======================================================
         if move_count <= 3:
             book_move = self.opening_book.get_move(board, move_count)
@@ -647,7 +693,7 @@ class GomokuAI:
                 return book_move
 
         # =======================================================
-        # 第 2 优先级：迭代加深 α-β 搜索
+        # 第 3 优先级：迭代加深 α-β 搜索
         # =======================================================
         self.search_start_time = time.time()
         self.time_up = False
