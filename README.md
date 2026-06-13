@@ -1,6 +1,6 @@
 # AiChess — 五子棋 AI
 
-> **在线体验**：[https://gomoku-ai-9g7-1va.pages.dev](https://gomoku-ai-9g7-1va.pages.dev)
+> **在线体验**：[https://gomoku-ai-9g7.pages.dev](https://gomoku-ai-9g7.pages.dev)
 
 纯前端五子棋 AI 对弈平台，AI 引擎基于 α-β 剪枝 + Zobrist 哈希 + 迭代加深搜索。
 
