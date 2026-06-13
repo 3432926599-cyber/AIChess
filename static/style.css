@@ -1,5 +1,5 @@
 /* ============================================================
-   AIChess — Dark Terminal 风格 v2
+   AIChess — Dark Terminal 风格 + 微信 X5 适配
    与 SupersupErChik 个人主页配套
    ============================================================ */
 
@@ -19,13 +19,14 @@
   --font-display: 'Syne', sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
 
-  --sz-huge: clamp(2rem, 5vw, 3rem);
-  --sz-big:  clamp(1.2rem, 2.2vw, 1.7rem);
+  --sz-huge: clamp(1.6rem, 4vw, 2.6rem);
+  --sz-big:  clamp(1.1rem, 2vw, 1.5rem);
   --sz-md:   0.95rem;
   --sz-sm:   0.85rem;
   --sz-xs:   0.72rem;
 }
 
+/* ========== Reset ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
@@ -49,61 +50,41 @@ body {
   overscroll-behavior-y: contain;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* --- 扫描线 --- */
+/* ========== 扫描线（同主页） ========== */
 body::after {
-  content: '';
-  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
   background: repeating-linear-gradient(
     0deg, transparent, transparent 2px,
     rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px
   );
 }
 
-/* ============================================================
-   容器
-   ============================================================ */
+/* ========== 容器 ========== */
 .container {
   width: 100%;
-  max-width: 920px;
-  padding: 2.5rem 1.5rem 4rem;
+  max-width: 960px;
+  padding: 2rem 1.5rem 4rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.8rem;
 }
 
-/* ============================================================
-   标题 — 终端命令行
-   ============================================================ */
+/* ========== 标题 — 终端命令行 ========== */
 .header {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
   flex-wrap: wrap;
-  padding-bottom: 1rem;
+  padding-bottom: 0.8rem;
   border-bottom: 1px solid var(--border);
 }
 
-.prompt {
-  color: var(--green);
-  font-family: var(--font-mono);
-  font-size: var(--sz-md);
-  font-weight: 700;
-}
-
-.path {
-  color: var(--cyan);
-  font-family: var(--font-mono);
-  font-size: var(--sz-sm);
-  opacity: 0.7;
-}
-
-.sep {
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: var(--sz-sm);
-}
+.prompt { color: var(--green); font-family: var(--font-mono); font-size: var(--sz-md); font-weight: 700; }
+.path   { color: var(--cyan); font-family: var(--font-mono); font-size: var(--sz-sm); opacity: 0.7; }
+.sep    { color: var(--text-dim); font-family: var(--font-mono); font-size: var(--sz-sm); }
 
 .title {
   font-family: var(--font-display);
@@ -119,25 +100,19 @@ body::after {
   background: var(--green);
   animation: blink 1s step-end infinite;
   vertical-align: text-bottom;
-  margin-left: 4px;
+  margin-left: 3px;
 }
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0; }
-}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
 .subtitle {
   font-family: var(--font-mono);
   font-size: var(--sz-xs);
   color: var(--text-dim);
-  margin-top: 0.3rem;
+  margin-top: 0.2rem;
   letter-spacing: 0.05em;
 }
 
-/* ============================================================
-   游戏主区域
-   ============================================================ */
+/* ========== 游戏主区域 ========== */
 .game-area {
   display: flex;
   gap: 2rem;
@@ -145,9 +120,7 @@ body::after {
   justify-content: center;
 }
 
-/* ============================================================
-   棋盘容器 — 终端窗口框
-   ============================================================ */
+/* ========== 棋盘 — 终端窗口框 ========== */
 .board-wrapper {
   background: var(--bg-alt);
   border: 1px solid var(--border);
@@ -156,7 +129,6 @@ body::after {
   position: relative;
 }
 
-/* 棋盘窗口标题栏 */
 .board-wrapper::before {
   content: 'board@aichess';
   display: block;
@@ -171,52 +143,42 @@ body::after {
   border-bottom: 1px solid var(--border);
 }
 
-.board-wrapper canvas {
-  display: block;
-}
+.board-wrapper canvas { display: block; }
 
-/* ============================================================
-   信息面板
-   ============================================================ */
+/* ========== 信息面板 ========== */
 .info-panel {
-  flex: 0 0 220px;
+  flex: 0 0 230px;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
 }
 
-/* 面板卡片通用 */
+/* 卡片通用 */
 .panel-card {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   overflow: hidden;
   transition: border-color 0.3s;
 }
+.panel-card:hover { border-color: #2a2a2a; }
 
-.panel-card:hover {
-  border-color: #2a2a2a;
-}
-
-/* 卡片标题栏 — 深色 header + 浅色 body（同主页野兽派风格） */
+/* 卡片标题栏 — 深色header+浅色body */
 .card-bar {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  padding: 0.4rem 0.9rem;
+  font-size: 0.64rem;
+  padding: 0.45rem 0.9rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
 }
-
 .card-bar.green  { color: var(--green); }
 .card-bar.amber  { color: var(--amber); }
 .card-bar.dim    { color: var(--text-dim); }
 
-.card-body {
-  padding: 0.8rem 0.9rem;
-}
+.card-body { padding: 0.85rem 0.9rem; }
 
-/* --- 状态卡片 --- */
+/* ---- 状态 ---- */
 .status-card .card-body {
   display: flex;
   align-items: center;
@@ -224,7 +186,7 @@ body::after {
 }
 
 .status-dot {
-  width: 8px; height: 8px; flex-shrink: 0;
+  width: 9px; height: 9px; flex-shrink: 0;
   background: var(--text-dim);
   transition: background 0.3s;
 }
@@ -238,20 +200,18 @@ body::after {
   font-family: var(--font-mono);
 }
 
-/* --- 统计卡片 --- */
+/* ---- 统计 ---- */
 .stats .card-body {
   display: flex;
   justify-content: space-around;
-  padding: 0.9rem 0.9rem;
+  padding: 0.95rem 0.9rem;
 }
 
-.stat-item {
-  text-align: center;
-}
+.stat-item { text-align: center; }
 
 .stat-label {
   display: block;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -259,34 +219,34 @@ body::after {
 }
 
 .stat-value {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-hi);
   font-family: var(--font-display);
 }
-
 .stat-value.black-label { color: var(--green); }
 .stat-value.white-label { color: var(--amber); }
 
-/* --- 按钮 --- */
-.actions {
-  display: flex;
-  gap: 0.6rem;
-}
+/* ========== 按钮 ========== */
+.actions { display: flex; gap: 0.6rem; }
 
 .btn {
   flex: 1;
-  padding: 0.65rem 0;
+  padding: 0.75rem 0;
   border: 1px solid var(--border);
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   transition: all 0.2s;
   background: transparent;
   color: var(--text);
   text-align: center;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
@@ -294,30 +254,16 @@ body::after {
   color: var(--bg);
   border-color: var(--green);
 }
-.btn-primary:hover {
-  background: transparent;
-  color: var(--green);
-}
+.btn-primary:hover { background: transparent; color: var(--green); }
 
-.btn-secondary {
-  color: var(--text-dim);
-}
-.btn-secondary:hover {
-  border-color: var(--green);
-  color: var(--green);
-}
+.btn-secondary { color: var(--text-dim); }
+.btn-secondary:hover { border-color: var(--green); color: var(--green); }
 
 .btn:active { transform: scale(0.97); }
-.btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  transform: none;
-}
+.btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
 
-/* --- 算法说明 --- */
-.legend .card-body {
-  padding: 0.6rem 0.9rem 0.7rem;
-}
+/* ========== 算法说明 ========== */
+.legend .card-body { padding: 0.7rem 0.9rem; }
 
 .legend-header {
   display: flex;
@@ -330,7 +276,7 @@ body::after {
 
 .legend-title {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-dim);
   letter-spacing: 0.06em;
@@ -339,7 +285,7 @@ body::after {
 
 .legend-toggle {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--text-dim);
   transition: transform 0.3s;
 }
@@ -349,61 +295,49 @@ body::after {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-top: 0.4rem;
+  gap: 3px;
+  margin-top: 0.5rem;
   overflow: hidden;
   transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.35s ease;
 }
-
-.legend-list.collapsed {
-  max-height: 0;
-  opacity: 0;
-  margin-top: 0;
-}
+.legend-list.collapsed { max-height: 0; opacity: 0; margin-top: 0; }
 
 .legend-list li {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--text-dim);
   font-family: var(--font-mono);
-  padding-left: 0.7rem;
+  padding-left: 0.8rem;
   position: relative;
-  line-height: 1.7;
+  line-height: 1.8;
 }
-
 .legend-list li::before {
   content: '>';
-  position: absolute;
-  left: 0;
+  position: absolute; left: 0;
   color: var(--green-dim);
   font-family: var(--font-mono);
 }
 
-/* ============================================================
-   底部导航
-   ============================================================ */
+/* ========== 底部 ========== */
 .footer-nav {
   text-align: center;
   padding-top: 0.5rem;
 }
-
 .footer-nav a {
   font-family: var(--font-mono);
   font-size: var(--sz-xs);
   color: var(--text-dim);
   text-decoration: none;
-  padding: 0.45rem 1rem;
+  padding: 0.5rem 1.1rem;
   border: 1px solid var(--border);
   transition: all 0.3s;
   letter-spacing: 0.06em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
-.footer-nav a:hover {
-  border-color: var(--green);
-  color: var(--green);
-}
+.footer-nav a:hover { border-color: var(--green); color: var(--green); }
 
-/* ============================================================
-   胜利弹窗
-   ============================================================ */
+/* ========== 胜利弹窗 ========== */
 .overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.78);
@@ -415,7 +349,6 @@ body::after {
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
-
 .hidden { display: none; }
 
 .win-dialog {
@@ -424,140 +357,101 @@ body::after {
   padding: 2.5rem 3rem;
   text-align: center;
   animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  max-width: 320px;
+  max-width: 330px;
+  width: 90%;
 }
-
 .win-dialog .win-icon {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-dim);
   margin-bottom: 0.6rem;
   letter-spacing: 0.15em;
 }
-
 .win-dialog .win-text {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-hi);
   margin-bottom: 0.3rem;
 }
-
 .win-dialog .win-sub {
   font-family: var(--font-mono);
   font-size: var(--sz-xs);
   color: var(--text-dim);
   margin-bottom: 1.5rem;
 }
-
 .win-dialog .btn { width: 100%; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+@keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
 
-@keyframes scaleIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-
-/* ============================================================
-   通用
-   ============================================================ */
+/* ========== 通用 ========== */
 ::selection { background: var(--green-dim); color: var(--bg); }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); }
-
-:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 2px;
-}
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  *,*::before,*::after { animation-duration: 0.01ms!important; transition-duration: 0.01ms!important; }
 }
 
 /* ============================================================
-   响应式 — 平板 (≤780px)
+   响应式 — 平板 ≤780px
    ============================================================ */
 @media (max-width: 780px) {
-  .container { padding: 1.5rem 1rem 3rem; gap: 1.5rem; }
+  .container { padding: 1.5rem 1rem 3rem; gap: 1.4rem; }
   .game-area { gap: 1.2rem; }
-  .info-panel { flex: 0 0 190px; }
-  .title { font-size: 1.8rem; }
+  .info-panel { flex: 0 0 195px; }
+  .title { font-size: 1.7rem; }
 }
 
 /* ============================================================
-   响应式 — 移动端 (≤600px)
+   响应式 — 手机 ≤600px (微信 X5 全覆盖)
    ============================================================ */
 @media (max-width: 600px) {
-  .container {
-    padding: 1rem 0.5rem 4rem;
-    gap: 1rem;
-  }
+  .container { padding: 0.8rem 0.4rem 4rem; gap: 0.8rem; }
 
-  .header {
-    justify-content: center;
-    padding-bottom: 0.8rem;
-  }
-
-  .title { font-size: 1.4rem; }
-  .prompt, .path, .sep { font-size: var(--sz-xs); }
+  .header { justify-content: center; padding-bottom: 0.6rem; }
+  .title { font-size: 1.3rem; }
+  .prompt,.path,.sep { font-size: 0.7rem; }
 
   .game-area {
     flex-direction: column;
     align-items: center;
-    gap: 0.8rem;
+    gap: 0.6rem;
   }
 
-  /* 棋盘 — 满宽 */
+  /* 棋盘满宽 */
   .board-wrapper {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     justify-content: center;
   }
-
   .board-wrapper::before {
-    margin: -10px -10px 8px -10px;
-    font-size: 0.58rem;
+    margin: -8px -8px 8px -8px;
+    font-size: 0.56rem;
     padding: 0.3rem 0.5rem;
   }
+  .board-wrapper canvas { max-width: 100%; height: auto; }
 
-  .board-wrapper canvas {
-    max-width: 100%;
-    height: auto;
-  }
-
-  /* 面板 — 全宽 */
-  .info-panel {
-    flex: 0 0 auto;
-    width: 100%;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  /* 面板全宽 */
+  .info-panel { flex: 0 0 auto; width: 100%; flex-direction: column; gap: 0.4rem; }
 
   .card-bar { font-size: 0.58rem; padding: 0.35rem 0.7rem; }
   .card-body { padding: 0.6rem 0.7rem; }
-
   .stat-label { font-size: 0.55rem; }
   .stat-value { font-size: 1rem; }
 
   .actions { gap: 0.5rem; }
-  .btn { font-size: 0.7rem; padding: 0.55rem 0; }
+  .btn { font-size: 0.74rem; padding: 0.65rem 0; }
 
-  .legend-list li { font-size: 0.63rem; }
+  .legend-title { font-size: 0.65rem; }
+  .legend-list li { font-size: 0.65rem; }
 
-  .win-dialog {
-    padding: 2rem 1.5rem;
-    max-width: 260px;
-  }
+  .win-dialog { padding: 2rem 1.5rem; max-width: 260px; }
   .win-dialog .win-text { font-size: 1.2rem; }
 
-  .footer-nav a { font-size: 0.65rem; padding: 0.4rem 0.8rem; }
+  .footer-nav a { font-size: 0.65rem; padding: 0.45rem 0.8rem; }
 }
