@@ -559,30 +559,26 @@ function draw() {
 }
 
 function drawGrid() {
-    // 棋盘底色 — 纸白
-    ctx.fillStyle = '#f0ece4';
+    ctx.fillStyle = '#121212';
     ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-    // 外框 — 墨黑粗线
-    ctx.strokeStyle = '#151312';
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#2a2a2a';
+    ctx.lineWidth = 1.5;
     ctx.strokeRect(MARGIN - 2, MARGIN - 2, (BOARD_SIZE - 1) * CELL_SIZE + 4, (BOARD_SIZE - 1) * CELL_SIZE + 4);
 
-    // 网格线 — 暖灰细线
-    ctx.strokeStyle = '#d4cfc8';
-    ctx.lineWidth = 0.7;
+    ctx.strokeStyle = '#252525';
+    ctx.lineWidth = 0.8;
     for (let i = 0; i < BOARD_SIZE; i++) {
         const pos = MARGIN + i * CELL_SIZE;
         ctx.beginPath(); ctx.moveTo(MARGIN, pos); ctx.lineTo(MARGIN + (BOARD_SIZE - 1) * CELL_SIZE, pos); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(pos, MARGIN); ctx.lineTo(pos, MARGIN + (BOARD_SIZE - 1) * CELL_SIZE); ctx.stroke();
     }
 
-    // 星位 — 墨黑小点
     const starPoints = [[3,3],[3,7],[3,11],[7,3],[7,7],[7,11],[11,3],[11,7],[11,11]];
-    ctx.fillStyle = '#151312';
+    ctx.fillStyle = '#3a3a3a';
     for (const [r, c] of starPoints) {
         ctx.beginPath();
-        ctx.arc(MARGIN + c * CELL_SIZE, MARGIN + r * CELL_SIZE, CELL_SIZE * 0.08, 0, Math.PI * 2);
+        ctx.arc(MARGIN + c * CELL_SIZE, MARGIN + r * CELL_SIZE, CELL_SIZE * 0.09, 0, Math.PI * 2);
         ctx.fill();
     }
 }
@@ -595,47 +591,35 @@ function drawStones() {
             const cx = MARGIN + c * CELL_SIZE;
             const cy = MARGIN + r * CELL_SIZE;
 
-            // 柔阴影
             ctx.beginPath();
-            ctx.arc(cx + 1.2, cy + 1.2, STONE_RADIUS, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,0,0,0.06)';
+            ctx.arc(cx + 1.5, cy + 1.5, STONE_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,0,0,0.25)';
             ctx.fill();
 
-            // 棋子主体
             const grad = ctx.createRadialGradient(
                 cx - STONE_RADIUS * 0.3, cy - STONE_RADIUS * 0.35, STONE_RADIUS * 0.08,
                 cx, cy, STONE_RADIUS
             );
             if (piece === BLACK) {
-                // 黑子 — 墨色温黑（非纯黑）
-                grad.addColorStop(0, '#4a4540');
-                grad.addColorStop(0.4, '#2a2724');
-                grad.addColorStop(0.75, '#181614');
-                grad.addColorStop(1, '#0d0c0a');
+                grad.addColorStop(0, '#7ed87e');
+                grad.addColorStop(0.35, '#4faf4f');
+                grad.addColorStop(0.7, '#3a8f3a');
+                grad.addColorStop(1, '#1e5e1e');
             } else {
-                // 白子 — 贝壳暖白
-                grad.addColorStop(0, '#fefdfa');
-                grad.addColorStop(0.35, '#f5f1e8');
-                grad.addColorStop(0.7, '#e8e2d8');
-                grad.addColorStop(1, '#d4cdc0');
+                grad.addColorStop(0, '#f0d68a');
+                grad.addColorStop(0.35, '#d7af5f');
+                grad.addColorStop(0.7, '#b8903a');
+                grad.addColorStop(1, '#7a6020');
             }
             ctx.beginPath();
             ctx.arc(cx, cy, STONE_RADIUS, 0, Math.PI * 2);
             ctx.fillStyle = grad;
             ctx.fill();
 
-            // 边框
-            ctx.strokeStyle = piece === BLACK ? '#0d0c0a' : '#c8c0b4';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-
-            // 高光点
             ctx.beginPath();
-            ctx.arc(cx - STONE_RADIUS * 0.26, cy - STONE_RADIUS * 0.26,
-                STONE_RADIUS * 0.16, 0, Math.PI * 2);
-            ctx.fillStyle = piece === BLACK
-                ? 'rgba(255,255,255,0.06)'
-                : 'rgba(255,255,255,0.5)';
+            ctx.arc(cx - STONE_RADIUS * 0.28, cy - STONE_RADIUS * 0.28,
+                STONE_RADIUS * 0.18, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.10)';
             ctx.fill();
         }
     }
@@ -645,31 +629,26 @@ function drawLastMoveMarker() {
     if (!lastMove) return;
     const cx = MARGIN + lastMove.col * CELL_SIZE;
     const cy = MARGIN + lastMove.row * CELL_SIZE;
-    // 朱砂点 — 最后落子标记
     ctx.beginPath();
-    ctx.arc(cx, cy, STONE_RADIUS * 0.26, 0, Math.PI * 2);
-    ctx.fillStyle = '#c93a2b';
-    ctx.fill();
-    // 细圈
-    ctx.beginPath();
-    ctx.arc(cx, cy, STONE_RADIUS * 0.48, 0, Math.PI * 2);
-    ctx.strokeStyle = '#c93a2b';
-    ctx.lineWidth = 1.5;
+    ctx.arc(cx, cy, STONE_RADIUS * 0.45, 0, Math.PI * 2);
+    ctx.strokeStyle = '#d7af5f';
+    ctx.lineWidth = 2;
     ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, STONE_RADIUS * 0.18, 0, Math.PI * 2);
+    ctx.fillStyle = '#d7af5f';
+    ctx.fill();
 }
 
 function drawHoverStone() {
     const cx = MARGIN + hoverPos.col * CELL_SIZE;
     const cy = MARGIN + hoverPos.row * CELL_SIZE;
     if (game.board[hoverPos.row][hoverPos.col] !== EMPTY) return;
-    // 朱砂淡影
     ctx.beginPath();
     ctx.arc(cx, cy, STONE_RADIUS, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(201, 58, 43, 0.07)';
+    ctx.fillStyle = 'rgba(79, 175, 79, 0.15)';
     ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx, cy, STONE_RADIUS, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(201, 58, 43, 0.22)';
+    ctx.strokeStyle = 'rgba(79, 175, 79, 0.3)';
     ctx.lineWidth = 1;
     ctx.stroke();
 }
@@ -678,15 +657,14 @@ function drawWinHighlight() {
     for (const [r, c] of game.winCells) {
         const cx = MARGIN + c * CELL_SIZE;
         const cy = MARGIN + r * CELL_SIZE;
-        // 朱砂光环 — 胜利标注
-        ctx.beginPath();
-        ctx.arc(cx, cy, STONE_RADIUS + 5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(201, 58, 43, 0.09)';
-        ctx.fill();
         ctx.beginPath();
         ctx.arc(cx, cy, STONE_RADIUS + 4, 0, Math.PI * 2);
-        ctx.strokeStyle = '#c93a2b';
-        ctx.lineWidth = 2.5;
+        ctx.fillStyle = 'rgba(215, 175, 95, 0.12)';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx, cy, STONE_RADIUS + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(215, 175, 95, 0.55)';
+        ctx.lineWidth = 2;
         ctx.stroke();
     }
 }
@@ -773,16 +751,16 @@ function updateUI() {
     const btnUndo = document.getElementById('btnUndo');
 
     moveCount.textContent = game.moveHistory.length;
-    statusDot.className = 'status-indicator';
-    statusCard.classList.remove('pulse');
+    statusDot.className = 'status-dot';
+    statusCard.classList.remove('ai-thinking');
 
     if (game.gameOver) {
         statusDot.classList.add('game-over');
         statusText.textContent = game.winner === BLACK ? '你赢了' :
                                  game.winner === WHITE ? 'AI 获胜' : '平局';
     } else if (aiThinking) {
-        statusDot.classList.add('white-turn');
-        statusCard.classList.add('pulse');
+        statusDot.classList.add('black-turn');
+        statusCard.classList.add('ai-thinking');
         statusText.textContent = 'AI 思考中…';
     } else if (game.currentPlayer === BLACK) {
         statusDot.classList.add('black-turn');
@@ -803,15 +781,15 @@ function showWinDialog() {
     const winSub = document.getElementById('winSub');
 
     if (game.winner === BLACK) {
-        winIcon.textContent = 'VICTORY';
-        winText.textContent = '你赢了';
-        winSub.textContent = `战胜 AI，${game.moveHistory.length} 步`;
+        winIcon.textContent = '🏆';
+        winText.textContent = '你赢了！';
+        winSub.textContent = `战胜 AI，共 ${game.moveHistory.length} 步`;
     } else if (game.winner === WHITE) {
-        winIcon.textContent = 'DEFEAT';
+        winIcon.textContent = '🤖';
         winText.textContent = 'AI 获胜';
-        winSub.textContent = `${game.moveHistory.length} 步 · 再来一局`;
+        winSub.textContent = `再接再厉，共 ${game.moveHistory.length} 步`;
     } else {
-        winIcon.textContent = 'DRAW';
+        winIcon.textContent = '🤝';
         winText.textContent = '平局';
         winSub.textContent = '棋盘已满，不分胜负';
     }
@@ -819,11 +797,8 @@ function showWinDialog() {
 }
 
 function toggleLegend() {
-    const list = document.getElementById('legendList');
-    const toggle = document.getElementById('legendToggle');
-    list.classList.toggle('collapsed');
-    toggle.classList.toggle('open');
-    toggle.textContent = list.classList.contains('collapsed') ? '+' : '−';
+    document.getElementById('legendList').classList.toggle('collapsed');
+    document.getElementById('legendToggle').classList.toggle('open');
 }
 
 // --vh polyfill（微信 X5 兼容）
