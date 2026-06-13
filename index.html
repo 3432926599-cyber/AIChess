@@ -7,102 +7,104 @@
     <meta name="x5-fullscreen" content="true">
     <meta name="x5-page-mode" content="app">
     <meta name="format-detection" content="telephone=no,email=no">
-    <title>AiChess — Gomoku AI</title>
+    <title>五子棋 · Gomoku AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=DM+Mono:wght@400;500&display=block" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <!-- 标题 — 终端命令行 -->
-    <header class="header">
-        <span class="prompt">$</span>
-        <span class="path">~/projects/aichess</span>
-        <span class="sep">—</span>
-        <span class="title">AiChess</span>
-        <span class="cursor"></span>
-    </header>
-    <p class="subtitle">Gomoku AI · α-β 剪枝 · Zobrist 哈希 · 纯前端运算</p>
+<!-- 页面加载序列动画容器 -->
+<div class="page-shell">
 
-    <!-- 游戏主区域 -->
-    <main class="game-area">
-        <!-- 棋盘 — 终端窗口框 -->
-        <div class="board-wrapper">
-            <canvas id="boardCanvas"></canvas>
+    <!-- 左栏：棋盘区 -->
+    <div class="board-column">
+        <div class="board-frame">
+            <div class="frame-label">15 × 15</div>
+            <div class="board-wrapper">
+                <canvas id="boardCanvas"></canvas>
+            </div>
+            <div class="frame-label bottom">Gomoku</div>
+        </div>
+    </div>
+
+    <!-- 右栏：信息面板 -->
+    <div class="panel-column">
+        <!-- 标题 -->
+        <div class="masthead">
+            <h1 class="title-cn">五子棋</h1>
+            <p class="title-en">Gomoku AI</p>
+            <div class="title-rule"></div>
+            <p class="title-desc">α-β 剪枝 · Zobrist 哈希 · 纯前端运算</p>
         </div>
 
-        <!-- 信息面板 -->
-        <aside class="info-panel">
-            <!-- 状态 -->
-            <div class="panel-card status-card" id="statusCard">
-                <div class="card-bar green">&gt; status</div>
-                <div class="card-body">
-                    <div class="status-dot" id="statusDot"></div>
-                    <span id="statusText">你的回合</span>
+        <!-- 状态指示 -->
+        <div class="panel-section" id="statusCard">
+            <div class="section-label">状态</div>
+            <div class="status-row">
+                <span class="status-indicator" id="statusDot"></span>
+                <span class="status-text" id="statusText">你的回合</span>
+            </div>
+        </div>
+
+        <!-- 数据 -->
+        <div class="panel-section">
+            <div class="section-label">数据</div>
+            <div class="stats-row">
+                <div class="stat">
+                    <span class="stat-num" id="moveCount">0</span>
+                    <span class="stat-unit">步</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-dot black"></span>
+                    <span class="stat-unit">黑棋</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-dot white"></span>
+                    <span class="stat-unit">白棋</span>
                 </div>
             </div>
+        </div>
 
-            <!-- 统计 -->
-            <div class="panel-card stats">
-                <div class="card-bar dim">&gt; stats</div>
-                <div class="card-body">
-                    <div class="stat-item">
-                        <span class="stat-label">步数</span>
-                        <span class="stat-value" id="moveCount">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">黑棋</span>
-                        <span class="stat-value black-label">●</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">白棋</span>
-                        <span class="stat-value white-label">●</span>
-                    </div>
-                </div>
+        <!-- 操作 -->
+        <div class="actions">
+            <button class="btn btn-primary" id="btnNewGame">新游戏</button>
+            <button class="btn btn-ghost" id="btnUndo">悔棋</button>
+        </div>
+
+        <!-- 引擎信息 -->
+        <div class="engine-card">
+            <div class="engine-header" id="legendHeader">
+                <span class="engine-title">引擎模块</span>
+                <span class="engine-toggle" id="legendToggle">−</span>
             </div>
+            <ul class="engine-list" id="legendList">
+                <li><span class="li-num">01</span> α-β 剪枝搜索</li>
+                <li><span class="li-num">02</span> Zobrist 哈希置换表</li>
+                <li><span class="li-num">03</span> 棋型评估函数</li>
+                <li><span class="li-num">04</span> 着法排序 + 历史启发</li>
+                <li><span class="li-num">05</span> 迭代加深搜索</li>
+                <li><span class="li-num">06</span> 内置开局库</li>
+            </ul>
+        </div>
 
-            <!-- 按钮 -->
-            <div class="actions">
-                <button class="btn btn-primary" id="btnNewGame">新游戏</button>
-                <button class="btn btn-secondary" id="btnUndo">悔棋</button>
-            </div>
-
-            <!-- 算法说明 -->
-            <div class="panel-card legend">
-                <div class="card-bar dim">&gt; engine</div>
-                <div class="card-body">
-                    <div class="legend-header" id="legendHeader">
-                        <span class="legend-title">算法说明</span>
-                        <span class="legend-toggle open" id="legendToggle">▲</span>
-                    </div>
-                    <ul class="legend-list" id="legendList">
-                        <li>α-β 剪枝搜索</li>
-                        <li>Zobrist 哈希置换表</li>
-                        <li>棋型评估函数</li>
-                        <li>着法排序+历史启发</li>
-                        <li>迭代加深搜索</li>
-                        <li>内置开局库</li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
-    </main>
-
-    <!-- 底部 -->
-    <div class="footer-nav">
-        <a href="https://supersuperchik-home.pages.dev">← 返回主页</a>
+        <!-- 页脚 -->
+        <a class="back-link" href="https://supersuperchik-home.pages.dev">← 返回主页</a>
     </div>
+
 </div>
 
-<!-- 胜利弹窗 -->
-<div class="overlay hidden" id="overlay">
-    <div class="win-dialog">
+<!-- 胜利遮罩 -->
+<div class="win-overlay hidden" id="overlay">
+    <div class="win-panel">
+        <p class="win-label">GAME OVER</p>
+        <h2 class="win-heading" id="winText">你赢了</h2>
+        <p class="win-detail" id="winSub"></p>
         <div class="win-icon" id="winIcon"></div>
-        <h2 class="win-text" id="winText"></h2>
-        <p class="win-sub" id="winSub"></p>
-        <button class="btn btn-primary" onclick="newGame()">再来一局</button>
+        <button class="btn btn-primary win-btn" onclick="newGame()">再来一局</button>
     </div>
 </div>
 
