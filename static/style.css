@@ -143,7 +143,10 @@ body::after {
   border-bottom: 1px solid var(--border);
 }
 
-.board-wrapper canvas { display: block; }
+.board-wrapper canvas {
+  display: block;
+  max-width: 100%;
+}
 
 /* ========== 信息面板 ========== */
 .info-panel {
@@ -410,34 +413,47 @@ body::after {
    响应式 — 手机 ≤600px (微信 X5 全覆盖)
    ============================================================ */
 @media (max-width: 600px) {
-  .container { padding: 0.8rem 0.4rem 4rem; gap: 0.8rem; }
+  .container {
+    padding: 0.5rem 0 4rem;
+    gap: 0.6rem;
+  }
 
   .header { justify-content: center; padding-bottom: 0.6rem; }
   .title { font-size: 1.3rem; }
   .prompt,.path,.sep { font-size: 0.7rem; }
+  .subtitle { padding: 0 0.5rem; }
 
   .game-area {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     gap: 0.6rem;
   }
 
-  /* 棋盘满宽 */
+  /* 棋盘满宽 — 零边距撑满 */
   .board-wrapper {
     width: 100%;
-    padding: 8px;
+    padding: 6px;
     display: flex;
     justify-content: center;
   }
   .board-wrapper::before {
-    margin: -8px -8px 8px -8px;
+    margin: -6px -6px 6px -6px;
     font-size: 0.56rem;
     padding: 0.3rem 0.5rem;
   }
-  .board-wrapper canvas { max-width: 100%; height: auto; }
+  .board-wrapper canvas {
+    display: block;
+    /* 不再 max-width:100% — JS computeSizes 已精确计算适配宽度 */
+  }
 
   /* 面板全宽 */
-  .info-panel { flex: 0 0 auto; width: 100%; flex-direction: column; gap: 0.4rem; }
+  .info-panel {
+    flex: 0 0 auto;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0 0.5rem;
+  }
 
   .card-bar { font-size: 0.58rem; padding: 0.35rem 0.7rem; }
   .card-body { padding: 0.6rem 0.7rem; }
@@ -453,5 +469,6 @@ body::after {
   .win-dialog { padding: 2rem 1.5rem; max-width: 260px; }
   .win-dialog .win-text { font-size: 1.2rem; }
 
+  .footer-nav { padding: 0 0.5rem; }
   .footer-nav a { font-size: 0.65rem; padding: 0.45rem 0.8rem; }
 }

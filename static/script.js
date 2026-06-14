@@ -536,12 +536,22 @@ let hoverPos = null;
 // ---- Canvas 尺寸自适应 ----
 function computeSizes() {
     const bw = document.querySelector('.board-wrapper');
-    const wrapperWidth = bw ? bw.clientWidth - 26 : window.innerWidth;
-    const maxWidth = Math.min(wrapperWidth, 620);
+    if (!bw) return;
+
+    // 精确计算可用宽度：取 wrapper 实际内容区宽度（剔除 padding）
+    const bwStyle = getComputedStyle(bw);
+    const paddingLR = parseFloat(bwStyle.paddingLeft) + parseFloat(bwStyle.paddingRight);
+    const borderLR = parseFloat(bwStyle.borderLeftWidth) + parseFloat(bwStyle.borderRightWidth);
+    const innerWidth = bw.clientWidth - paddingLR - borderLR;
+
+    // 桌面端上限 620，移动端自动撑满
+    const maxWidth = Math.min(innerWidth, 620);
     const idealSize = Math.floor((maxWidth - MARGIN * 2) / (BOARD_SIZE - 1));
     CELL_SIZE = Math.min(MAX_CELL_SIZE, Math.max(idealSize, 18));
     STONE_RADIUS = CELL_SIZE * 0.44;
     canvasSize = BOARD_SIZE * CELL_SIZE + MARGIN * 2;
+
+    // 设置 canvas 物理分辨率 = CSS 显示尺寸（1:1 像素比）
     canvas.width = canvasSize;
     canvas.height = canvasSize;
     canvas.style.width = canvasSize + 'px';
