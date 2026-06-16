@@ -5,10 +5,11 @@
 纯前端五子棋 AI 对弈平台。暗黑终端美学风格，AI 引擎基于 α-β 剪枝 + Zobrist 哈希 + 迭代加深搜索，浏览器端直接运算，无需后端。
 
 <p align="center">
-  <img src="https://img.shields.io/badge/JavaScript-ES6%2B-f7df1e?logo=javascript" alt="JS">
-  <img src="https://img.shields.io/badge/AI-%CE%B1%E2%80%93%CE%B2_Pruning-4faf4f" alt="AI">
+  <img src="https://img.shields.io/badge/JavaScript-ES6+-f7df1e?logo=javascript" alt="JS">
+  <img src="https://img.shields.io/badge/AI-Alpha_Beta_Pruning-4faf4f" alt="AI">
   <img src="https://img.shields.io/badge/deploy-Cloudflare_Pages-f38020?logo=cloudflare" alt="CF Pages">
   <img src="https://img.shields.io/badge/mobile-WeChat_X5_Ready-07c160?logo=wechat" alt="WeChat">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
 </p>
 
 ---
